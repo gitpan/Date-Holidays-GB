@@ -31,7 +31,7 @@ no_index:
 provides:
   Date::Holidays::GB:
     file: lib/Date/Holidays/GB.pm
-    version: 0.001
+    version: 0.002
 requires:
   Date::Holidays::Super: 0
   Exporter: 0
@@ -45,4 +45,4 @@ resources:
   bugtracker: https://github.com/mjemmeson/date-holidays-gb/issues
   homepage: https://metacpan.org/release/Date-Holidays-GB
   repository: git://github.com/mjemmeson/date-holidays-gb.git
-version: 0.001
+version: 0.002

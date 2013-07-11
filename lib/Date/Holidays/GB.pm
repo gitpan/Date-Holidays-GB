@@ -1,6 +1,6 @@
 package Date::Holidays::GB;
 
-our $VERSION = '0.001'; # VERSION
+our $VERSION = '0.002'; # VERSION
 
 # ABSTRACT: Date::Holidays class for GB
 
@@ -132,7 +132,7 @@ Date::Holidays::GB - Date::Holidays class for GB
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 
@@ -153,8 +153,12 @@ version 0.001
 
 =head1 DESCRIPTION
 
-A L<Date::Holidays> style package updated with the British holiday dates now
-published at L<https://www.gov.uk/bank-holidays>.
+A L<Date::Holidays> style package updated with the British bank holiday dates now
+published at L<https://www.gov.uk/bank-holidays>. Holidays may apply to all
+regions, or some combination - see the C<regions> parameter for more details.
+
+Module is named with correct ISO-3166-1 code for the United Kingdom: "GB"
+(Great Britain)
 
 =head1 NAME
 
@@ -211,7 +215,7 @@ region(s).
 
 =head1 ISO-3166-2 REGION CODES
 
-Valid codes for regions are:
+Valid codes for the regions that make up ISO-3166-1 "GB" are:
 
 =over
 
