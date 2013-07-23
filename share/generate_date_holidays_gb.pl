@@ -7,9 +7,11 @@ use strict;
 use warnings;
 
 use Cwd qw( realpath );
+use DateTime;
 use File::Spec::Functions qw( catfile splitpath updir );
 use iCal::Parser;
 use LWP::Simple qw/ get /;
+use Template;
 use Time::Local();
 
 my $URL = 'http://www.gov.uk/bank-holidays/';
@@ -44,7 +46,7 @@ sub read_files {
     while ( my ( $region, $code ) = each %CODES ) {
         open( my $FH, "<:encoding(UTF-8)", "t/samples/$region.ics" )
             or die "Can't open '$region.ics' : $!";
-        my $contents = do { local $/ = <$FH> };
+        my $contents = do { local $/; <$FH> };
         $contents =~ s/(BEGIN:VCALENDAR)/$1\nX-WR-CALNAME:$code/;
         $files{$region} = $contents;
     }
@@ -90,7 +92,11 @@ sub write_file {
 
     my $contents = do { local $/; <DATA> };
 
-    print $FH $contents;
+    my $tt2 = Template->new;
+    my $output;
+    $tt2->process( \$contents, { date_generated => DateTime->now->ymd }, \$output );
+
+    print $FH $output;
 
     print $FH holiday_data( %holidays );
 
@@ -119,7 +125,7 @@ package Date::Holidays::GB;
 
 # VERSION
 
-# ABSTRACT: Date::Holidays class for GB
+# ABSTRACT: Date::Holidays compatible package for the UK, with public/bank holiday dates, updated from gov.uk
 
 use strict;
 use warnings;
@@ -234,6 +240,8 @@ sub _holiday {
 
     return join( ', ', @strings );
 }
+
+sub date_generated { '[% date_generated %]' }
 
 1;
 

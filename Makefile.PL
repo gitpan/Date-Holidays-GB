@@ -11,7 +11,7 @@ install_share dist => "share";
 
 
 my %WriteMakefileArgs = (
-  "ABSTRACT" => "Date::Holidays class for GB",
+  "ABSTRACT" => "Date::Holidays compatible package for the UK, with public/bank holiday dates, updated from gov.uk",
   "AUTHOR" => "Michael Jemmeson <mjemmeson\@cpan.org>",
   "BUILD_REQUIRES" => {},
   "CONFIGURE_REQUIRES" => {
@@ -40,7 +40,7 @@ my %WriteMakefileArgs = (
     "Test::More" => 0,
     "Test::Most" => 0
   },
-  "VERSION" => "0.002",
+  "VERSION" => "0.003",
   "test" => {
     "TESTS" => "t/*.t"
   }

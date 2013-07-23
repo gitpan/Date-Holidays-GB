@@ -1,8 +1,8 @@
 package Date::Holidays::GB;
 
-our $VERSION = '0.002'; # VERSION
+our $VERSION = '0.003'; # VERSION
 
-# ABSTRACT: Date::Holidays class for GB
+# ABSTRACT: Date::Holidays compatible package for the UK, with public/bank holiday dates, updated from gov.uk
 
 use strict;
 use warnings;
@@ -118,6 +118,8 @@ sub _holiday {
     return join( ', ', @strings );
 }
 
+sub date_generated { '2013-07-23' }
+
 1;
 
 # PODNAME: Date::Holidays::GB
@@ -128,11 +130,11 @@ sub _holiday {
 
 =head1 NAME
 
-Date::Holidays::GB - Date::Holidays class for GB
+Date::Holidays::GB - Date::Holidays compatible package for the UK, with public/bank holiday dates, updated from gov.uk
 
 =head1 VERSION
 
-version 0.002
+version 0.003
 
 =head1 SYNOPSIS
 
@@ -160,9 +162,9 @@ regions, or some combination - see the C<regions> parameter for more details.
 Module is named with correct ISO-3166-1 code for the United Kingdom: "GB"
 (Great Britain)
 
-=head1 NAME
-
-Date::Holidays::GB - UK public holiday dates, updated from gov.uk
+To just work with holiday days for a single region, use one of the subclasses:
+L<Date::Holidays::GB::EAW>, L<Date::Holidays::GB::NIR>, or
+L<Date::Holidays::GB::SCT>.
 
 =head1 EXPORTS
 
@@ -213,6 +215,12 @@ Returns the holiday details (as per C<holidays>) but for a single date.
 Returns false if the specified date is not a holiday in the appropriate
 region(s).
 
+=head2 date_generated
+
+    print Date::Holidays::GB->date_generated;
+
+Prints the date that the data was downloaded, in YYYY-MM-DD format.
+
 =head1 ISO-3166-2 REGION CODES
 
 Valid codes for the regions that make up ISO-3166-1 "GB" are:
@@ -232,6 +240,13 @@ SCT - Scotland
 NIR - Northern Ireland
 
 =back
+
+=head1 GENERATING THE DATA
+
+The source for this package is generated via a script, included with the
+distribution (L<share/generate_date_holidays_gb.pl>). This downloads the
+latest iCal files from L<http://www.gov.uk/>, and could be used to
+update/alter the package if necessary.
 
 =head1 SEE ALSO
 

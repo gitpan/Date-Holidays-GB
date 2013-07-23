@@ -1,5 +1,9 @@
 Revision history for Date-Holidays-GB
 
+0.003     2013-07-23 21:53:52 Europe/London
+
+ - Region modules, date_generated method, POD and script improvements
+
 0.002     2013-07-11 12:34:02 Europe/London
 
  - Generate script takes data from gov.uk site not sample files

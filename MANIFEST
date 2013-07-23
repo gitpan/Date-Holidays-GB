@@ -8,9 +8,13 @@ README
 README.md
 dist.ini
 lib/Date/Holidays/GB.pm
+lib/Date/Holidays/GB/EAW.pm
+lib/Date/Holidays/GB/NIR.pm
+lib/Date/Holidays/GB/SCT.pm
 share/generate_date_holidays_gb.pl
 t/00-compile.t
 t/00-report-prereqs.t
+t/regions.t
 t/samples/england-and-wales.ics
 t/samples/northern-ireland.ics
 t/samples/scotland.ics

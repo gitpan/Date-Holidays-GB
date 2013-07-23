@@ -1,8 +1,9 @@
 NAME
-    Date::Holidays::GB - Date::Holidays class for GB
+    Date::Holidays::GB - Date::Holidays compatible package for the UK, with
+    public/bank holiday dates, updated from gov.uk
 
 VERSION
-    version 0.002
+    version 0.003
 
 SYNOPSIS
         use Date::Holidays::GB qw/ holidays is_holiday /;
@@ -29,8 +30,9 @@ DESCRIPTION
     Module is named with correct ISO-3166-1 code for the United Kingdom:
     "GB" (Great Britain)
 
-NAME
-    Date::Holidays::GB - UK public holiday dates, updated from gov.uk
+    To just work with holiday days for a single region, use one of the
+    subclasses: Date::Holidays::GB::EAW, Date::Holidays::GB::NIR, or
+    Date::Holidays::GB::SCT.
 
 EXPORTS
     Exports "holidays" and "is_holiday" on demand.
@@ -76,6 +78,11 @@ METHODS
     Returns false if the specified date is not a holiday in the appropriate
     region(s).
 
+  date_generated
+        print Date::Holidays::GB->date_generated;
+
+    Prints the date that the data was downloaded, in YYYY-MM-DD format.
+
 ISO-3166-2 REGION CODES
     Valid codes for the regions that make up ISO-3166-1 "GB" are:
 
@@ -84,6 +91,12 @@ ISO-3166-2 REGION CODES
     *   SCT - Scotland
 
     *   NIR - Northern Ireland
+
+GENERATING THE DATA
+    The source for this package is generated via a script, included with the
+    distribution ("generate_date_holidays_gb.pl" in share). This downloads
+    the latest iCal files from <http://www.gov.uk/>, and could be used to
+    update/alter the package if necessary.
 
 SEE ALSO
     *   Date::Holidays
