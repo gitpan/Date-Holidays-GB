@@ -35,7 +35,7 @@ sub download_cals {
 
         $contents =~ s/(BEGIN:VCALENDAR)/$1\nX-WR-CALNAME:$code/;
 
-        $cals{$region} = $contents;
+        $cals{$code} = $contents;
     }
 
     return %cals;
@@ -48,12 +48,10 @@ sub read_files {
             or die "Can't open '$region.ics' : $!";
         my $contents = do { local $/; <$FH> };
         $contents =~ s/(BEGIN:VCALENDAR)/$1\nX-WR-CALNAME:$code/;
-        $files{$region} = $contents;
+        $files{$code} = $contents;
     }
     return %files;
 }
-
-use Data::Dumper::Concise;
 
 sub get_dates {
 
@@ -108,9 +106,9 @@ sub holiday_data {
 
     my $data;
     foreach my $date ( sort keys %holidays ) {
-        foreach my $region ( sort keys %{ $holidays{$date} } ) {
+        foreach my $code ( sort keys %{ $holidays{$date} } ) {
             $data .= sprintf( "%s\t%s\t%s\n",
-                $date, $region, $holidays{$date}->{$region} );
+                $date, $code, $holidays{$date}->{$code} );
         }
     }
 
@@ -125,14 +123,20 @@ package Date::Holidays::GB;
 
 # VERSION
 
-# ABSTRACT: Date::Holidays compatible package for the UK, with public/bank holiday dates, updated from gov.uk
+# ABSTRACT: Determine British holidays - UK public and bank holiday dates
 
 use strict;
 use warnings;
 use utf8;
 
 use base qw( Date::Holidays::Super Exporter );
-our @EXPORT_OK = qw( holidays is_holiday );
+our @EXPORT_OK = qw(
+  holidays
+  gb_holidays
+  holidays_ymd
+  is_holiday
+  is_gb_holiday
+);
 
 # See
 # http://en.wikipedia.org/wiki/ISO_3166-2
@@ -146,23 +150,30 @@ use constant REGION_NAMES => {
 use constant REGIONS => [ sort keys %{ +REGION_NAMES } ];
 
 our %holidays;
+set_holidays(\*DATA);
 
-while (<DATA>) {
-    chomp;
-    my ( $date, $region, $name ) = split /\t/;
+sub set_holidays {
+    my $fh = shift;
+    while (<$fh>) {
+        chomp;
+        my ( $date, $region, $name ) = split /\t/;
+        next unless $date && $region && $name;
 
-    my ( $y, $m, $d ) = split /-/, $date;
-    $holidays{$y}->{ $m . $d }->{$region} = $name;
-}
+        my ( $y, $m, $d ) = split /-/, $date;
+        $holidays{$y}->{$date}->{$region} = $name;
+    }
 
-# Define an 'all' if all three regions have a holiday on this day, taking
-# EAW name as the canonical name
-while ( my ( $year, $dates ) = each %holidays ) {
-    foreach my $holiday ( values %{$dates} ) {
-        $holiday->{all} = $holiday->{EAW}
-            if keys %{$holiday} == @{ +REGIONS };
+    # Define an 'all' if all three regions have a holiday on this day, taking
+    # EAW name as the canonical name
+    while ( my ( $year, $dates ) = each %holidays ) {
+        foreach my $holiday ( values %{$dates} ) {
+            $holiday->{all} = $holiday->{EAW}
+                if keys %{$holiday} == @{ +REGIONS };
+        }
     }
 }
+
+sub gb_holidays { return holidays(@_) }
 
 sub holidays {
     my %args
@@ -188,11 +199,28 @@ sub holidays {
     while ( my ( $date, $holiday ) = each %{ $holidays{ $args{year} } } ) {
         my $string = _holiday( $holiday, \@region_codes )
             or next;
-        $return{$date} = $string;
+
+        if ( $args{ymd} ) {
+            $return{$date} = $string;
+        } else {
+            my ( undef, $m, undef, $d ) = unpack( 'A5A2A1A2', $date );
+            $return{ $m . $d } = $string;
+        }
     }
 
     return \%return;
 }
+
+sub holidays_ymd {
+    my %args
+        = $_[0] =~ m/\D/
+        ? @_
+        : ( year => $_[0], regions => $_[1] );
+
+    return holidays( %args, ymd => 1 );
+}
+
+sub is_gb_holiday { return is_holiday(@_) }
 
 sub is_holiday {
     my %args
@@ -208,10 +236,36 @@ sub is_holiday {
         or return;
 
     # return if no region has holiday
-    my $holiday = $holidays{$y}->{ sprintf( "%02d%02d", $m, $d ) }
+    my $holiday = $holidays{$y}->{ sprintf( "%04d-%02d-%02d", $y, $m, $d ) }
         or return;
 
     return _holiday( $holiday, \@region_codes );
+}
+
+sub next_holiday {
+    my @regions = (shift) || @{+REGIONS};
+
+    my ( $d, $m, $year ) = ( localtime() )[ 3 .. 5 ];
+    my $today = sprintf( "%04d-%02d-%02d", $year + 1900, $m + 1, $d );
+
+    my %next_holidays;
+
+    foreach my $date ( sort keys %{ $holidays{$year} } ) {
+
+        next unless $date gt $today;
+
+        my $holiday = $holidays{$year}->{$date};
+
+        foreach my $region ( 'all', @regions ) {
+            my $name = $holiday->{$region} or next;
+
+            $next_holidays{$region} ||= $name;
+        }
+
+        last if $next_holidays{all} or keys %next_holidays == @{ +REGIONS };
+    }
+
+    return \%next_holidays;
 }
 
 sub _holiday {
