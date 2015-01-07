@@ -1,5 +1,14 @@
 Revision history for Date-Holidays-GB
 
+0.006  2015-01-07 17:07:12 GMT
+
+ [Update]
+ - 2012 and 2013 dates reinstated (side effect of switching to JSON source)
+
+ [Maintenance]
+ - generate from gov.uk JSON not ical
+ - simplify generation script, remove templating 
+
 0.005  2014-05-22 13:48:14 BST
 
  [Update]
